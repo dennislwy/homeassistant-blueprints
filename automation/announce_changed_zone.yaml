@@ -1,0 +1,50 @@
+blueprint:
+  name: Zone Changed Announcement
+  description: Announce when a person changed (entered or left) zone.
+  domain: automation
+  source_url: https://github.com/dennislwy/homeassistant-blueprints/blob/main/automation/announce_changed_zone.yaml
+  author: Dennis Lee
+  input:
+    person_entity:
+      name: Person
+      selector:
+        entity:
+          domain: person
+    zone_entity:
+      name: Zone
+      selector:
+        entity:
+          domain: zone
+    play_device:
+      name: Device to announce
+      selector:
+        entity:
+          domain: media_player
+          device_class: speaker
+
+trigger:
+  platform: state
+  entity_id: !input person_entity
+
+variables:
+  # This is the state of the person when it's in this zone.
+  zone_state: "{{ states[zone_entity].name }}"
+  person_entity: !input person_entity
+  person_name: "{{ states[person_entity].name }}"
+
+condition:
+  condition: template
+  value_template: "{{ trigger.from_state.state == zone_state and trigger.to_state.state != zone_state or trigger.from_state.state != zone_state and trigger.to_state.state == zone_state }}"
+
+action:
+  - alias: "Announce that person has enter or left the zone"
+    action: tts.google_say
+    data:
+      cache: true
+      entity_id: !input play_device
+      message: |
+        {% if is_state(zone_state, 'not_home') %}
+          {{ person_name }} has left {{ trigger.from_state.state }}
+        {% else %}
+          {{ person_name }} is at {{ trigger.to_state.state }}
+        {% endif %}

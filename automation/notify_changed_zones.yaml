@@ -1,8 +1,8 @@
 blueprint:
-  name: Zone Changed Notification
-  description: Send a notification to a device when a person changed (entered or left) zone.
+  name: Zones Changed Mobile Notification
+  description: Send a notification to a mobile device when a person changed (entered or left) zones.
   domain: automation
-  source_url: https://github.com/dennislwy/homeassistant-blueprints/automation/notify_changed_zone.yaml
+  source_url: https://github.com/dennislwy/homeassistant-blueprints/blob/main/automation/notify_changed_zones.yaml
   author: Dennis Lee
   input:
     person_entity:
@@ -32,13 +32,13 @@ condition:
   value_template: "{{ trigger.from_state.state != trigger.to_state.state }}"
 
 action:
-  - alias: "Notify that a person has enter or left a zone"
+  - alias: "Notify that a person has enter or left the zone"
     domain: mobile_app
     type: notify
     device_id: !input notify_device
     message: |
-        {% if is_state(zone_state, 'not_home') %}
-          {{ person_name }} left {{ trigger.from_state.state }}
-        {% else %}
-          {{ person_name }} is at {{ trigger.to_state.state }}
-        {% endif %}
+      {% if is_state(zone_state, 'not_home') %}
+        {{ person_name }} has left {{ trigger.from_state.state }}
+      {% else %}
+        {{ person_name }} is at {{ trigger.to_state.state }}
+      {% endif %}
