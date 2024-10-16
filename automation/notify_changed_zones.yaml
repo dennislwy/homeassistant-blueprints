@@ -17,17 +17,16 @@ blueprint:
         device:
           integration: mobile_app
 
+variables:
+  # This is the state of the person when it's in this zone.
+  person_entity: !input person_entity
+  person_name: "{{ states[person_entity].name }}"
+
 trigger:
   platform: state
   entity_id: !input person_entity
 
-variables:
-  # This is the state of the person when it's in this zone.
-  zone_state: "{{ states[zone_entity].name }}"
-  person_entity: !input person_entity
-  person_name: "{{ states[person_entity].name }}"
-
-condition:
+conditions:
   condition: template
   value_template: "{{ trigger.from_state.state != trigger.to_state.state }}"
 
@@ -37,7 +36,7 @@ action:
     type: notify
     device_id: !input notify_device
     message: |
-      {% if is_state(zone_state, 'not_home') %}
+      {% if is_state(person_entity, 'not_home') %}
         {{ person_name }} has left {{ trigger.from_state.state }}
       {% else %}
         {{ person_name }} is at {{ trigger.to_state.state }}
