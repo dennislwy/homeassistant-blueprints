@@ -14,8 +14,9 @@ blueprint:
       selector:
         entity:
           filter:
-            - domain: sensor
             - domain: switch
+            # - domain: sensor
+            - domain: binary_sensor
 
     notify_device:
       name: Device to notify
@@ -95,7 +96,11 @@ variables:
 trigger:
   - platform: time
     at: !input trigger_time
-
+  - platform: state
+    entity_id: !input monitor_entity
+    to: !input fault_state
+    for: !input fault_duration
+    
 condition:
   - condition: state
     entity_id: !input monitor_entity
