@@ -63,10 +63,22 @@ blueprint:
               value: sat
             - label: Sunday
               value: sun
-    fault_state:
-      name: Fault state
-      description: State of which entity is classify as fault. Make sure the selected entities is having the same fault state when at fault. E.g unavailable, unknown, on
-      default: unavailable
+    fault_states:
+      name: Fault states
+      description: States which classify entities as being in fault. Notification will be triggered if entity matches any of these states.
+      default: 
+        - unavailable
+        - unknown
+      selector:
+        select:
+          multiple: true
+          mode: dropdown
+          custom_value: true
+          options:
+            - unavailable
+            - unknown
+            - on
+            - off
     fault_duration:
       name: Fault duration
       description: How long the entity in fault state before triggering notification.
@@ -82,7 +94,7 @@ blueprint:
         default: ""
 
 variables:
-  fault_state: !input fault_state
+  fault_states: !input fault_states
   custom_message: !input custom_message
   monitor_entities: !input monitor_entities
   fault_duration: !input fault_duration
@@ -106,7 +118,7 @@ action:
                   value_template: >
                     {% set entity_id = repeat.item %}
                     {% set entity_state = states(entity_id) %}
-                    {{ entity_state == fault_state }}
+                    {{ entity_state in fault_states }}
                 - condition: template
                   value_template: >
                     {% set entity_id = repeat.item %}
