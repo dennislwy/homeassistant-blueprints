@@ -6,7 +6,6 @@ blueprint:
   domain: automation
   source_url: https://github.com/dennislwy/homeassistant-blueprints/blob/main/automation/notify_switch_binary_sensor_fault.yaml
   author: Dennis Lee
-
   input:
     monitor_entity:
       name: Entity to monitor
@@ -16,7 +15,6 @@ blueprint:
           filter:
             - domain: switch
             - domain: binary_sensor
-
     notify_device:
       name: Device to notify
       description: Device needs to run the official Home Assistant app to receive notifications.
@@ -24,14 +22,12 @@ blueprint:
         device:
           filter:
             integration: mobile_app
-
     trigger_time:
       name: Time to check
       description: The time of day to run the fault check.
       default: "10:00:00"
       selector:
         time: {}
-
     check_weekdays:
       name: Days to check
       description: Days of the week when the check should be performed.
@@ -62,12 +58,10 @@ blueprint:
               value: sat
             - label: Sunday
               value: sun
-              
     fault_state:
       name: Fault state
       description: State of the entity that is classify as fault
       default: unavailable
-
     fault_duration:
       name: Duration of fault state
       description: How long the entity in fault state before triggering notification.
@@ -75,7 +69,6 @@ blueprint:
         hours: 1
       selector:
         duration: {}
-
     custom_message:
         name: Custom notification message
         description: >
@@ -115,5 +108,5 @@ action:
     type: notify
     device_id: !input notify_device
     message: "{{ notification_message }}"
-    
+
 mode: single
