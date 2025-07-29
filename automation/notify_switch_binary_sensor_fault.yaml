@@ -1,21 +1,20 @@
 blueprint:
-  name: Sensor/Switch Fault Notification
+  name: Switch/Binary Sensor Fault Notification
   description: >
-    Performs scheduled checks on a sensor or switch and sends a notification
-    if it has been in fault state for a specified duration of time.
+    Performs scheduled fault checks on a switch or binary sensor and sends
+    notification if it has been in fault state for a specified duration of time.
   domain: automation
-  source_url: https://github.com/dennislwy/homeassistant-blueprints/blob/main/automation/notify_sensor_switch_fault.yaml
+  source_url: https://github.com/dennislwy/homeassistant-blueprints/blob/main/automation/notify_switch_binary_sensor_fault.yaml
   author: Dennis Lee
 
   input:
     monitor_entity:
       name: Entity to monitor
-      description: The sensor or switch entity to monitor for faults.
+      description: The entity to monitor for faults.
       selector:
         entity:
           filter:
             - domain: switch
-            # - domain: sensor
             - domain: binary_sensor
 
     notify_device:
@@ -84,13 +83,14 @@ blueprint:
         default: ""
 
 variables:
+  fault_state: !input fault_state
   custom_message: !input custom_message
   monitor_entity: !input monitor_entity
   notification_message: >
       {% if custom_message | trim != '' %}
         {{ custom_message }}
       {% else %}
-        🚨 {{ state_attr(monitor_entity, 'friendly_name') or monitor_entity }} is offline or unavailable
+        🚨 {{ state_attr(monitor_entity, 'friendly_name') or monitor_entity }} is {{ fault_state }}
       {% endif %}
   
 trigger:
@@ -115,4 +115,5 @@ action:
     type: notify
     device_id: !input notify_device
     message: "{{ notification_message }}"
+    
 mode: single
