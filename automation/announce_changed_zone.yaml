@@ -32,7 +32,7 @@ variables:
   # This is the state of the person when it's in this zone.
   zone_state: "{{ states[zone_entity].name }}"
   person_entity: !input person_entity
-  person_name: "{{ states[person_entity].friendly_name }}"
+  person_name: "{{ states[person_entity].name }}"
 
 condition:
   condition: template

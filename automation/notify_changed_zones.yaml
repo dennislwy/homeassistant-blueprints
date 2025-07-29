@@ -29,7 +29,7 @@ blueprint:
 variables:
   # This is the state of the person when it's in this zone.
   person_entity: !input person_entity
-  person_name: "{{ states[person_entity].friendly_name }}"
+  person_name: "{{ states[person_entity].name }}"
 
 trigger:
   platform: state
@@ -49,5 +49,5 @@ action:
       {% if is_state(person_entity, 'not_home') %}
         {{ person_name }} has left {{ trigger.from_state.state }}
       {% else %}
-        {{ person_name }} is at 📍{{ trigger.to_state.state }}
+        📍{{ person_name }} is at {{ trigger.to_state.state }}
       {% endif %}

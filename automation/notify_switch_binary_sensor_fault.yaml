@@ -83,7 +83,7 @@ variables:
       {% if custom_message | trim != '' %}
         {{ custom_message }}
       {% else %}
-        🚨 {{ state_attr(monitor_entity, 'friendly_name') or monitor_entity }} is {{ fault_state }}
+        🚨{{ state_attr(monitor_entity, 'friendly_name') or monitor_entity }} is {{ fault_state }}
       {% endif %}
   
 trigger:
