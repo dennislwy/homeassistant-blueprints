@@ -30,7 +30,7 @@ blueprint:
     trigger_time:
       name: Time to check
       description: The time of day to run the fault check.
-      default: "10:00:00"
+      default: "9:00:00"
       selector:
         time: {}
     check_weekdays:
@@ -65,7 +65,9 @@ blueprint:
               value: sun
     fault_states:
       name: Fault states
-      description: States which classify entities as being in fault. Notification will be triggered if entity matches any of these states.
+      description: >
+        States which classify entities as being in fault. Notification will be triggered 
+        if entity matches any of these states. You may enter custom states as well.
       default: 
         - unavailable
         - unknown
@@ -75,10 +77,14 @@ blueprint:
           mode: dropdown
           custom_value: true
           options:
-            - unavailable
-            - unknown
-            - on
-            - off
+            - label: 'Unavailable'
+              value: 'unavailable'
+            - label: 'Unknown'
+              value: 'unknown'
+            - label: 'On'
+              value: 'on'
+            - label: 'Off'
+              value: 'off'
     fault_duration:
       name: Fault duration
       description: How long the entity in fault state before triggering notification.
