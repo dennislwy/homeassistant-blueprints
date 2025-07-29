@@ -65,7 +65,7 @@ blueprint:
               value: sun
     fault_state:
       name: Fault state
-      description: State of which entity is classify as fault. Make sure the selected entities is having the same fault state when at fault. E.g: unavailable, unknown, on
+      description: State of which entity is classify as fault. Make sure the selected entities is having the same fault state when at fault. E.g unavailable, unknown, on
       default: unavailable
     fault_duration:
       name: Fault duration
@@ -78,7 +78,7 @@ blueprint:
         name: Custom notification message
         description: >
           Optional. If provided, this message will be sent instead of the default.
-          Use {entity} as a placeholder for the entity name.
+          Use {entity} and {state} as a placeholder for the entity name and fault state.
         default: ""
 
 variables:
@@ -100,19 +100,25 @@ action:
       for_each: "{{ monitor_entities }}"
       sequence:
         - if:
-            - condition: template
-              value_template: >
-                {% set entity_id = repeat.item %}
-                {% set entity_state = states(entity_id) %}
-                {% set last_changed = states[entity_id].last_changed %}
-                {% set duration_seconds = fault_duration.get('days', 0) * 86400 + fault_duration.get('hours', 0) * 3600 + fault_duration.get('minutes', 0) * 60 + fault_duration.get('seconds', 0) %}
-                {{ entity_state == fault_state and (now() - last_changed).total_seconds() >= duration_seconds }}
+            - condition: and
+              conditions:
+                - condition: template
+                  value_template: >
+                    {% set entity_id = repeat.item %}
+                    {% set entity_state = states(entity_id) %}
+                    {{ entity_state == fault_state }}
+                - condition: template
+                  value_template: >
+                    {% set entity_id = repeat.item %}
+                    {% set last_changed = states[entity_id].last_changed %}
+                    {% set duration_seconds = fault_duration.get('days', 0) * 86400 + fault_duration.get('hours', 0) * 3600 + fault_duration.get('minutes', 0) * 60 + fault_duration.get('seconds', 0) %}
+                    {{ (now() - last_changed).total_seconds() >= duration_seconds }}
           then:
             - variables:
                 entity_name: "{{ state_attr(repeat.item, 'friendly_name') or repeat.item }}"
                 notification_message: >
                   {% if custom_message | trim != '' %}
-                    {{ custom_message.replace('{entity}', entity_name) }}
+                    {{ custom_message.replace('{entity}', entity_name).replace('{state}', fault_state) }}
                   {% else %}
                     🚨{{ entity_name }} is {{ fault_state }}
                   {% endif %}
