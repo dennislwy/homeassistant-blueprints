@@ -78,7 +78,7 @@ blueprint:
         name: Custom notification message
         description: >
           Optional. If provided, this message will be sent instead of the default.
-          Use {entity} and {state} as a placeholder for the entity name and fault state.
+          Use {entity} and {state} as a placeholder for the entity name and state.
         default: ""
 
 variables:
@@ -116,11 +116,12 @@ action:
           then:
             - variables:
                 entity_name: "{{ state_attr(repeat.item, 'friendly_name') or repeat.item }}"
+                entity_state: "{{ states(repeat.item) }}"
                 notification_message: >
                   {% if custom_message | trim != '' %}
-                    {{ custom_message.replace('{entity}', entity_name).replace('{state}', fault_state) }}
+                    {{ custom_message.replace('{entity}', entity_name).replace('{state}', entity_state) }}
                   {% else %}
-                    🚨{{ entity_name }} is {{ fault_state }}
+                    🚨{{ entity_name }} is {{ entity_state }}
                   {% endif %}
             - domain: mobile_app
               type: notify
