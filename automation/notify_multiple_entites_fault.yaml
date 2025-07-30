@@ -19,7 +19,7 @@ blueprint:
             - domain: vacuum
             - domain: lock
             - domain: remote
-            - domain: speaker
+            - domain: media_player
           multiple: true
     notify_device:
       name: Device to notify
